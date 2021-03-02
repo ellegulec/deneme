@@ -1,0 +1,139 @@
+---
+title: "Kategorik Veri Final Projesi"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+library(rvest)
+library(dplyr)
+library(hflights)
+library(kableExtra)
+library(ca)
+library(gmodels)
+library(DescTools)
+library(plotly)
+```
+
+# *DATASET*
+
+Bu veri 29-77 yaş arası kadın ve erkek *KALP HASTALARININ* göğüs ağrısı semptomlarının derecelerinin araştırılmasını amaçlamaktadır.
+
+Değişkenlerimizi özetlemek gerekirse;
+
+CİNSİYET: sex(sexuality)
+
+0-1 şeklinde derecelendirimiştir.(2 değer)
+
+0:KADIN
+1:ERKEK
+
+GÖĞÜS AĞRISI SEMPTOMLARI: cp(chast pain type)
+
+0-3 arası derecelendirilmiştir.(4 değer)
+
+0 hafif ağrı, 3 yüksek ağrı şeklinde puanlandırılır.
+
+(Yukarıda belirtilen açıklamalar baz alınarak test hesaplamaları yapılmıştır.)
+
+```{r}
+heart <- read_csv("C:/Users/ELİF/Desktop/heart.txt")
+```
+
+Verinin Detaylandırılması
+
+```{r}
+kategorik.tablo<-heart[c(1:3)]
+show(kategorik.tablo)
+attach(kategorik.tablo)
+names(kategorik.tablo)
+class(sex)
+class(cp)
+levels(cp)
+```
+
+# *3-D GRAPHS*
+```{r}
+plotly::plot_ly(kategorik.tablo, x = ~sex, y= ~cp, z= ~age)
+```
+
+```{r}
+str(kategorik.tablo)
+sum(kategorik.tablo)
+dimnames(kategorik.tablo)
+```
+
+# *2X4'lük Çapraz Tablo*
+```{r}
+library(gmodels)
+kategorik.tablo.capraz<-gmodels::CrossTable(kategorik.tablo$sex,kategorik.tablo$cp)
+show(kategorik.tablo.capraz)
+```
+
+# *Çapraz Tablo Grafiği*
+
+```{r}
+plot(kategorik.tablo,main="Heart Data")
+```
+
+# *ANALİZLER*
+
+Ho: iki değişken arasında ilişki yoktur.
+
+Ha: iki değişken arasında istatistiksel olarak ilişki vardır.
+
+# *G-testi*
+```{r}
+kategoril.tablo_g_test<-DescTools::GTest(kategorik.tablo)
+show(kategorik.tablo)
+```
+
+# *Kruskal-Wallis Testi*
+```{r}
+kruskal.test(sex~cp, data= kategorik.tablo)
+```
+
+# *Correspondence Analizi*
+
+# *Chi^2 testi*
+```{r}
+help(chisq.test)
+?chisq.test
+table(sex, cp)
+TAB = table(sex, cp)
+TAB
+barplot(TAB, beside= TRUE, legend= TRUE)
+chisq.test(TAB, correct=TRUE)
+CHI = chisq.test(TAB, correct=TRUE)
+CHI
+attributes(CHI)
+CHI$expected
+```
+
+```{r}
+FactoMineR::CA(kategorik.tablo)
+```
+
+# *Çözümlerin Karşılaştırılması:*
+
+# *Chi^2 Elle Çözüm:* 
+
+İki çözümde birbirini desteklemektedir.
+
+![İki çözümde birbirini desteklemektedir.](ki-kare.png)
+
+
+
+# *KAYNAKÇA:*
+https://www.kaggle.com/ronitf/heart-disease-uci
+
+*Elif GÜLEÇ*
+
+20181101039
+
+
+
+
+
